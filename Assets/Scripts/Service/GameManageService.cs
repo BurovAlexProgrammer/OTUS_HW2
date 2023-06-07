@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Listener;
 using UnityEngine;
 
-namespace GameContext
+namespace Service
 {
-    public sealed class GameManager : MonoBehaviour
+    public class GameManageService : ServiceBase
     {
         private List<IGameListener> _gameListeners = new List<IGameListener>();
         private State _currentState = State.Undefined;
@@ -36,7 +36,7 @@ namespace GameContext
                 }
             }
 
-            _currentState = State.Finish;
+            SetState(State.Finish);
         }
 
         public void InitGame()
@@ -49,7 +49,7 @@ namespace GameContext
                 }
             }
 
-            _currentState = State.Init;
+            SetState(State.Init);
         }
 
         public void StartGame()
@@ -62,7 +62,7 @@ namespace GameContext
                 }
             }
 
-            _currentState = State.Start;
+            SetState(State.Start);
         }
         
         public void GameOver()
@@ -75,7 +75,13 @@ namespace GameContext
                 }
             }
 
-            _currentState = State.GameOver;
+            SetState(State.GameOver);
+        }
+
+        private void SetState(State state)
+        {
+            _currentState = state;
+            Debug.Log("GameState: " + state);
         }
     }
 }

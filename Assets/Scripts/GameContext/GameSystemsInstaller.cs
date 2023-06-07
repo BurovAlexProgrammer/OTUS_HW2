@@ -1,47 +1,45 @@
-﻿using Listener;
+﻿using System.Collections.Generic;
+using DI;
+using Listener;
 using Service;
 using UnityEngine;
 
 namespace GameContext
 {
-    public class GameInstaller : MonoBehaviour
+    public class GameSystemsInstaller : MonoBehaviour
     {
-        [SerializeField] private ServiceBase[] _services;
+        [SerializeField] private List<MonoBehaviour> _dependencies;
 
         private IGameListener[] _listeners;
         private IUpdateListener[] _updateListeners;
-        private GameManager _gameManager;
+        private GameManageService _gameManageService;
 
         private void Awake()
         {
-            _gameManager = GetComponent<GameManager>();
+            _gameManageService = ServiceLocator.Get<GameManageService>();
             _listeners = GetComponentsInChildren<IGameListener>();
             _updateListeners = GetComponentsInChildren<IUpdateListener>();
 
-            InstallServices();
             InstallListeners();
             ResolveDependencies();
-            _gameManager.InitGame();
-        }
-
-        private void InstallServices()
-        {
-            foreach (var service in _services)
-            {
-                ServiceLocator.Add(service);
-            }
+            
+            _gameManageService.InitGame();
         }
 
         private void InstallListeners()
         {
             foreach (var gameListener in _listeners)
             {
-                _gameManager.AddListener(gameListener);
+                _gameManageService.AddListener(gameListener);
             }
         }
 
         private void ResolveDependencies()
         {
+            foreach (var dependency in _dependencies)
+            {
+                DependencyInjector.Inject(dependency);
+            }
         }
 
         private void Update()

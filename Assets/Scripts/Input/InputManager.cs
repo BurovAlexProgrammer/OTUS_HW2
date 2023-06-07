@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ShootEmUp
 {
@@ -9,14 +10,14 @@ namespace ShootEmUp
         [SerializeField]
         private GameObject character;
 
-        [SerializeField]
-        private CharacterController characterController;
+        [FormerlySerializedAs("characterController")] [SerializeField]
+        private CharacterControlSystem _characterControlSystem;
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                characterController._fireRequired = true;
+                _characterControlSystem._fireRequired = true;
             }
 
             if (Input.GetKey(KeyCode.LeftArrow))

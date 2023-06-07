@@ -31,11 +31,12 @@ namespace DI
             
             for (var i = 0; i < parameterInfos.Length; i++)
             {
-                var type = parameterInfos[i].GetType();
+                var type = parameterInfos[i].ParameterType;
                 args[i] = ServiceLocator.Get(type);
             }
 
             method.Invoke(target, args);
+            Debug.Log($"{target.GetType().Name} injected.");
         }
     }
 }

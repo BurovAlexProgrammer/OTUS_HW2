@@ -20,6 +20,11 @@
         void OnUpdate();
     }
     
+    public interface IFixedUpdateListener : IGameListener
+    {
+        void OnFixedUpdate();
+    }
+    
     public interface IGameListener
     {
     }
