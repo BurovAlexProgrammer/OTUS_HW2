@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DI;
 using Listener;
 using Service;
@@ -12,6 +13,7 @@ namespace GameContext
 
         private IGameListener[] _listeners;
         private IUpdateListener[] _updateListeners;
+        private IFixedUpdateListener[] _fixedUpdateListeners;
         private GameManageService _gameManageService;
 
         private void Awake()
@@ -19,6 +21,7 @@ namespace GameContext
             _gameManageService = ServiceLocator.Get<GameManageService>();
             _listeners = GetComponentsInChildren<IGameListener>();
             _updateListeners = GetComponentsInChildren<IUpdateListener>();
+            _fixedUpdateListeners = GetComponentsInChildren<IFixedUpdateListener>();
 
             InstallListeners();
             ResolveDependencies();
@@ -46,7 +49,15 @@ namespace GameContext
         {
             foreach (var updateListener in _updateListeners)
             {
-                updateListener.OnUpdate();
+                updateListener.OnUpdate(Time.deltaTime);
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            foreach (var fixedUpdateListener in _fixedUpdateListeners)
+            {
+                fixedUpdateListener.OnFixedUpdate(Time.fixedDeltaTime);
             }
         }
     }

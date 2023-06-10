@@ -17,12 +17,12 @@
     
     public interface IUpdateListener : IGameListener
     {
-        void OnUpdate();
+        void OnUpdate(float deltaTime);
     }
     
     public interface IFixedUpdateListener : IGameListener
     {
-        void OnFixedUpdate();
+        void OnFixedUpdate(float fixedDeltaTime);
     }
     
     public interface IGameListener

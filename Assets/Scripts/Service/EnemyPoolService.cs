@@ -1,20 +1,11 @@
 using System.Collections.Generic;
+using Service;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyPool : MonoBehaviour
+    public sealed class EnemyPoolService : ServiceBase
     {
-        [Header("Spawn")]
-        [SerializeField]
-        private EnemyPositions enemyPositions;
-
-        [SerializeField]
-        private GameObject character;
-
-        [SerializeField]
-        private Transform worldTransform;
-
         [Header("Pool")]
         [SerializeField]
         private Transform container;
@@ -33,22 +24,15 @@ namespace ShootEmUp
             }
         }
 
-        public GameObject SpawnEnemy()
+        public GameObject SpawnEnemy(Transform worldTransform)
         {
             if (!this.enemyPool.TryDequeue(out var enemy))
             {
                 return null;
             }
 
-            enemy.transform.SetParent(this.worldTransform);
+            enemy.transform.SetParent(worldTransform);
 
-            var spawnPosition = this.enemyPositions.RandomSpawnPosition();
-            enemy.transform.position = spawnPosition.position;
-            
-            var attackPosition = this.enemyPositions.RandomAttackPosition();
-            enemy.GetComponent<EnemyMoveAgent>().SetDestination(attackPosition.position);
-
-            enemy.GetComponent<EnemyAttackAgent>().SetTarget(this.character);
             return enemy;
         }
 

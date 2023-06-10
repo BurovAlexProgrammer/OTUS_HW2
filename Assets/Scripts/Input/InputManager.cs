@@ -10,14 +10,14 @@ namespace ShootEmUp
         [SerializeField]
         private GameObject character;
 
-        [FormerlySerializedAs("characterController")] [SerializeField]
-        private CharacterControlSystem _characterControlSystem;
+        [FormerlySerializedAs("_characterControlSystem")] [FormerlySerializedAs("characterController")] [SerializeField]
+        private CharacterSystem _characterSystem;
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                _characterControlSystem._fireRequired = true;
+                _characterSystem._fireRequired = true;
             }
 
             if (Input.GetKey(KeyCode.LeftArrow))
