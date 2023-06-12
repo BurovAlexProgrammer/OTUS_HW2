@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Listener;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class BulletSystem : MonoBehaviour
+    public sealed class BulletSystem : MonoBehaviour, IFixedUpdateListener, IGameInitListener
     {
         [SerializeField]
         private int initialCount = 50;
@@ -17,7 +18,7 @@ namespace ShootEmUp
         private readonly HashSet<Bullet> m_activeBullets = new();
         private readonly List<Bullet> m_cache = new();
         
-        private void Awake()
+        void IGameInitListener.OnInit()
         {
             for (var i = 0; i < this.initialCount; i++)
             {
@@ -26,7 +27,7 @@ namespace ShootEmUp
             }
         }
         
-        private void FixedUpdate()
+        void IFixedUpdateListener.OnFixedUpdate(float fixedDeltaTime)
         {
             this.m_cache.Clear();
             this.m_cache.AddRange(this.m_activeBullets);

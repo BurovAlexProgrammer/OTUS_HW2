@@ -23,7 +23,6 @@ namespace Systems
         [Inject]
         public void Construct(CharacterService characterService, EnemyPoolService enemyPoolService)
         {
-            Debug.Log("Char");
             _character = characterService.Character;
             _enemyPoolService = enemyPoolService;
         }

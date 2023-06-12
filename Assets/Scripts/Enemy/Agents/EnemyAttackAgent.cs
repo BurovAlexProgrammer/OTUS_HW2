@@ -1,8 +1,9 @@
+using Listener;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyAttackAgent : MonoBehaviour
+    public sealed class EnemyAttackAgent : MonoBehaviour, IFixedUpdateListener
     {
         public delegate void FireHandler(GameObject enemy, Vector2 position, Vector2 direction);
 
@@ -25,7 +26,7 @@ namespace ShootEmUp
             this.currentTime = this.countdown;
         }
 
-        private void FixedUpdate()
+        void IFixedUpdateListener.OnFixedUpdate(float fixedDeltaTime)
         {
             if (!this.moveAgent.IsReached)
             {
@@ -37,7 +38,7 @@ namespace ShootEmUp
                 return;
             }
 
-            this.currentTime -= Time.fixedDeltaTime;
+            this.currentTime -= fixedDeltaTime;
             if (this.currentTime <= 0)
             {
                 this.Fire();
