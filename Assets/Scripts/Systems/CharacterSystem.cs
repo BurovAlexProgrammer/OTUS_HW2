@@ -1,9 +1,10 @@
 using DI;
 using Listener;
 using Service;
+using ShootEmUp;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Systems
 {
     public sealed class CharacterSystem : MonoBehaviour, IGameInitListener, IGameStartListener, IGameOverListener, IFixedUpdateListener
     {

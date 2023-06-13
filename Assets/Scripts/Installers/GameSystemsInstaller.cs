@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DI;
 using Listener;
 using Service;
 using UnityEngine;
 
-namespace GameContext
+namespace Installers
 {
     public class GameSystemsInstaller : MonoBehaviour
     {
         [SerializeField] private List<MonoBehaviour> _dependencies;
 
-        private IGameListener[] _listeners;
-        private IUpdateListener[] _updateListeners;
-        private IFixedUpdateListener[] _fixedUpdateListeners;
+        public List<IGameListener> Listeners;
+        public List<IUpdateListener> UpdateListeners;
+        public List<IFixedUpdateListener> FixedUpdateListeners;
         private GameManageService _gameManageService;
 
         private void Awake()
         {
+            ServiceLocator.Get<GameSystemsService>().Init(this);
             _gameManageService = ServiceLocator.Get<GameManageService>();
-            _listeners = GetComponentsInChildren<IGameListener>();
-            _updateListeners = GetComponentsInChildren<IUpdateListener>();
-            _fixedUpdateListeners = GetComponentsInChildren<IFixedUpdateListener>();
+            Listeners = GetComponentsInChildren<IGameListener>().ToList();
+            UpdateListeners = GetComponentsInChildren<IUpdateListener>().ToList();
+            FixedUpdateListeners = GetComponentsInChildren<IFixedUpdateListener>().ToList();
 
             InstallListeners();
             ResolveDependencies();
@@ -31,7 +32,7 @@ namespace GameContext
 
         private void InstallListeners()
         {
-            foreach (var gameListener in _listeners)
+            foreach (var gameListener in Listeners)
             {
                 _gameManageService.AddListener(gameListener);
             }
@@ -47,7 +48,7 @@ namespace GameContext
 
         private void Update()
         {
-            foreach (var updateListener in _updateListeners)
+            foreach (var updateListener in UpdateListeners)
             {
                 updateListener.OnUpdate(Time.deltaTime);
             }
@@ -55,7 +56,7 @@ namespace GameContext
 
         private void FixedUpdate()
         {
-            foreach (var fixedUpdateListener in _fixedUpdateListeners)
+            foreach (var fixedUpdateListener in FixedUpdateListeners)
             {
                 fixedUpdateListener.OnFixedUpdate(Time.fixedDeltaTime);
             }

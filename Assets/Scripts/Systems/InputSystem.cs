@@ -8,10 +8,6 @@ namespace Systems
 {
     public sealed class InputSystem : MonoBehaviour, IUpdateListener
     {
-        [SerializeField] private GameObject character;
-
-        [SerializeField] private CharacterSystem _characterSystem;
-
         private InputService _inputService;
 
         [Inject]

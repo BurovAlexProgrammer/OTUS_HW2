@@ -1,7 +1,7 @@
 ﻿using Service;
 using UnityEngine;
 
-namespace GameContext
+namespace Installers
 {
     public class GameServicesInstaller : MonoBehaviour
     {
