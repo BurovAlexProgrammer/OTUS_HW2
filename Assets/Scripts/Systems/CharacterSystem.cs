@@ -68,7 +68,7 @@ namespace Systems
                 _inputService.IsFireRequired = false;
             }
             
-            _moveComponent.MoveByRigidbodyVelocity(new Vector2(_inputService.HorizontalDirection, 0f) * fixedDeltaTime);
+            _moveComponent.Move(new Vector2(_inputService.HorizontalDirection, 0f) * fixedDeltaTime);
         }
     }
 }
