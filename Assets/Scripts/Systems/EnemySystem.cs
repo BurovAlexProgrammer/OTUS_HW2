@@ -9,22 +9,23 @@ namespace Systems
 {
     public sealed class EnemySystem : MonoBehaviour, IGameStartListener, IGameInitListener, IUpdateListener
     {
-        [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private Transform _worldTransform;
         [SerializeField] private EnemyPositions enemyPositions;
 
         private EnemyPoolService _enemyPoolService;
+        private BulletSpawnService _bulletSpawnService;
         private readonly HashSet<GameObject> _activeEnemies = new();
         private float _spawnTimer;
         private GameObject _character;
-        
+
         private const float SpawnPeriod = 1.5f;
 
         [Inject]
-        public void Construct(CharacterService characterService, EnemyPoolService enemyPoolService)
+        public void Construct(CharacterService characterService, EnemyPoolService enemyPoolService, BulletSpawnService bulletSpawnService)
         {
             _character = characterService.Character;
             _enemyPoolService = enemyPoolService;
+            _bulletSpawnService = bulletSpawnService;
         }
         
         private void OnDestroyed(GameObject enemy)
@@ -40,7 +41,7 @@ namespace Systems
 
         private void OnFire(GameObject enemy, Vector2 position, Vector2 direction)
         {
-            _bulletSystem.Spawn(new BulletSpawner.Args()
+            _bulletSpawnService.Spawn(new BulletSpawnService.Args()
             {
                 isPlayer = false,
                 physicsLayer = (int) PhysicsLayer.ENEMY,

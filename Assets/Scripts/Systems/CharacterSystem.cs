@@ -8,22 +8,23 @@ namespace Systems
 {
     public sealed class CharacterSystem : MonoBehaviour, IGameInitListener, IGameStartListener, IGameOverListener, IFixedUpdateListener
     {
-        [SerializeField] private BulletSystem _bulletSystem;
-        [SerializeField] private BulletConfig _bulletConfig;
-        
         private GameManageService _gameManageService;
+        private CharacterService _characterService;
         private GameObject _character;
         private InputService _inputService;
+        private BulletSpawnService _bulletSpawnService;
         
         private WeaponComponent _weaponComponent;
         private MoveComponent _moveComponent;
 
         [Inject]
-        public void Construct(GameManageService gameManageService, CharacterService characterService, InputService inputService)
+        public void Construct(GameManageService gameManageService, CharacterService characterService, InputService inputService, BulletSpawnService bulletSpawnService)
         {
             _gameManageService = gameManageService;
+            _characterService = characterService;
             _character = characterService.Character;
             _inputService = inputService;
+            _bulletSpawnService = bulletSpawnService;
         }
 
         public void OnInit()
@@ -34,14 +35,15 @@ namespace Systems
         
         private void OnFlyBullet()
         {
-            _bulletSystem.Spawn(new BulletSpawner.Args()
+            var bulletConfig = _characterService.BulletConfig;
+            _bulletSpawnService.Spawn(new BulletSpawnService.Args()
             {
                 isPlayer = true,
-                physicsLayer = (int) this._bulletConfig.physicsLayer,
-                color = this._bulletConfig.color,
-                damage = this._bulletConfig.damage,
+                physicsLayer = (int) bulletConfig.physicsLayer,
+                color = bulletConfig.color,
+                damage = bulletConfig.damage,
                 position = _weaponComponent.Position,
-                velocity = _weaponComponent.Rotation * Vector3.up * this._bulletConfig.speed
+                velocity = _weaponComponent.Rotation * Vector3.up * bulletConfig.speed
             });
         }
 

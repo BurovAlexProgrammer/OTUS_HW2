@@ -16,10 +16,10 @@ namespace ShootEmUp
             _bounds = bounds;
         }
         
-        public void Track(BulletPool bulletPool)
+        public void Track(HashSet<Bullet> activeBullets)
         {
             _cache.Clear();
-            _cache.AddRange(bulletPool.ActiveBullets);
+            _cache.AddRange(activeBullets);
 
             for (int i = 0, count = _cache.Count; i < count; i++)
             {

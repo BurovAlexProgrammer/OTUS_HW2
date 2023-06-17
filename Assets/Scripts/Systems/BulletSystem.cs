@@ -1,38 +1,40 @@
+using DI;
 using Listener;
+using Service;
 using UnityEngine;
 
 namespace ShootEmUp
 {
     public sealed class BulletSystem : MonoBehaviour, IFixedUpdateListener, IGameInitListener
     {
-        [SerializeField] private int initialCount = 50;
-        [SerializeField] private Transform container;
-        [SerializeField] private Bullet prefab;
-        [SerializeField] private Transform worldTransform;
         [SerializeField] private LevelBounds levelBounds;
 
-        private BulletPool _bulletPool = new BulletPool();
-        private BulletSpawner _bulletSpawner = new BulletSpawner();
+        private BulletSpawnService _bulletSpawnService;
         private BulletTracker _bulletTracker = new BulletTracker();
 
+        [Inject]
+        public void Construct(BulletSpawnService bulletSpawnService)
+        {
+            _bulletSpawnService = bulletSpawnService;
+        }
+        
         void IGameInitListener.OnInit()
         {
-            _bulletPool.Init(prefab, container, initialCount, worldTransform);
-            _bulletSpawner.Init(_bulletPool);
-            _bulletPool.OnReturn += OnBulletReturnToPool;
+            _bulletSpawnService.Init();
+            _bulletSpawnService.OnBulletSpawned += OnBulletSpawned;
+            _bulletSpawnService.OnBulletReturned += OnBulletReturnToPool;
             _bulletTracker.Init(levelBounds);
             _bulletTracker.OnRequireRemove += OnRequireRemoveBullet;
         }
 
-        void IFixedUpdateListener.OnFixedUpdate(float fixedDeltaTime)
+        private void OnBulletSpawned(Bullet bullet)
         {
-            _bulletTracker.Track(_bulletPool);
+            bullet.OnCollisionEntered += this.OnBulletCollision;
         }
 
-        public void Spawn(BulletSpawner.Args args)
-        {
-            var bullet = _bulletSpawner.Spawn(args);
-            bullet.OnCollisionEntered += this.OnBulletCollision;
+        void IFixedUpdateListener.OnFixedUpdate(float fixedDeltaTime)
+        { 
+            _bulletTracker.Track(_bulletSpawnService.ActiveBullets);
         }
 
         private void OnBulletCollision(Bullet bullet, Collision2D collision)
@@ -43,12 +45,12 @@ namespace ShootEmUp
 
         private void RemoveBullet(Bullet bullet)
         {
-            _bulletPool.Return(bullet);
+            _bulletSpawnService.ReturnBullet(bullet);
         }
 
         private void OnRequireRemoveBullet(Bullet bullet)
         {
-            _bulletPool.Return(bullet);
+            _bulletSpawnService.ReturnBullet(bullet);
         }
 
         private void OnBulletReturnToPool(Bullet bullet)
