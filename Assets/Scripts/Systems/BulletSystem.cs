@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Listener;
 using UnityEngine;
 
@@ -12,44 +11,30 @@ namespace ShootEmUp
         [SerializeField] private Transform worldTransform;
         [SerializeField] private LevelBounds levelBounds;
 
-        private BulletPool _bulletPool;
+        private BulletPool _bulletPool = new BulletPool();
+        private BulletSpawner _bulletSpawner = new BulletSpawner();
+        private BulletTracker _bulletTracker = new BulletTracker();
 
-        private readonly List<Bullet> _cache = new();
-        
         void IGameInitListener.OnInit()
         {
-            _bulletPool = new BulletPool();
             _bulletPool.Init(prefab, container, initialCount, worldTransform);
+            _bulletSpawner.Init(_bulletPool);
+            _bulletPool.OnReturn += OnBulletReturnToPool;
+            _bulletTracker.Init(levelBounds);
+            _bulletTracker.OnRequireRemove += OnRequireRemoveBullet;
         }
-        
+
         void IFixedUpdateListener.OnFixedUpdate(float fixedDeltaTime)
         {
-            _cache.Clear();
-            _cache.AddRange(_bulletPool.ActiveBullets);
-
-            for (int i = 0, count = _cache.Count; i < count; i++)
-            {
-                var bullet = _cache[i];
-                if (!this.levelBounds.InBounds(bullet.transform.position))
-                {
-                    this.RemoveBullet(bullet);
-                }
-            }
+            _bulletTracker.Track(_bulletPool);
         }
 
-        public void FlyBulletByArgs(Args args)
+        public void Spawn(BulletSpawner.Args args)
         {
-            var bullet = _bulletPool.Get();
-
-            bullet.SetPosition(args.position);
-            bullet.SetColor(args.color);
-            bullet.SetPhysicsLayer(args.physicsLayer);
-            bullet.damage = args.damage;
-            bullet.isPlayer = args.isPlayer;
-            bullet.SetVelocity(args.velocity);
+            var bullet = _bulletSpawner.Spawn(args);
             bullet.OnCollisionEntered += this.OnBulletCollision;
         }
-        
+
         private void OnBulletCollision(Bullet bullet, Collision2D collision)
         {
             BulletUtils.DealDamage(bullet, collision.gameObject);
@@ -58,18 +43,17 @@ namespace ShootEmUp
 
         private void RemoveBullet(Bullet bullet)
         {
-            bullet.OnCollisionEntered -= this.OnBulletCollision;
             _bulletPool.Return(bullet);
         }
-        
-        public struct Args
+
+        private void OnRequireRemoveBullet(Bullet bullet)
         {
-            public Vector2 position;
-            public Vector2 velocity;
-            public Color color;
-            public int physicsLayer;
-            public int damage;
-            public bool isPlayer;
+            _bulletPool.Return(bullet);
+        }
+
+        private void OnBulletReturnToPool(Bullet bullet)
+        {
+            bullet.OnCollisionEntered -= this.OnBulletCollision;
         }
     }
 }

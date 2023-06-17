@@ -34,7 +34,7 @@ namespace Systems
         
         private void OnFlyBullet()
         {
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            _bulletSystem.Spawn(new BulletSpawner.Args()
             {
                 isPlayer = true,
                 physicsLayer = (int) this._bulletConfig.physicsLayer,

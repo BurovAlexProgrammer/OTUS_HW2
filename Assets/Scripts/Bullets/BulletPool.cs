@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ShootEmUp
 {
     public class BulletPool
     {
+        public event Action<Bullet> OnReturn;
+        
         private readonly Queue<Bullet> _bulletPool = new();
         private readonly HashSet<Bullet> _activeBullets = new();
-        
         private Bullet _prefab;
         private Transform _container;
         private Transform _worldTransform;
@@ -43,6 +45,7 @@ namespace ShootEmUp
         {
             if (ActiveBullets.Remove(bullet))
             {
+                OnReturn?.Invoke(bullet);
                 bullet.transform.SetParent(_container);
                 bullet.gameObject.SetActive(false);
                 _bulletPool.Enqueue(bullet);
