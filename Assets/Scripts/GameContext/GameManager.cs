@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using Listener;
 using UnityEngine;
 
-namespace Service
+namespace GameContext
 {
-    public class GameManageService : ServiceBase
+    public class GameManager : MonoBehaviour
     {
         private List<IGameListener> _gameListeners = new List<IGameListener>();
+        private List<IUpdateListener> _updateListeners = new List<IUpdateListener>();
+        private List<IFixedUpdateListener> _fixedUpdateListeners = new List<IFixedUpdateListener>();
         private State _currentState = State.Undefined;
         
         public enum State
@@ -20,6 +23,18 @@ namespace Service
 
         public void AddListener(IGameListener listener)
         {
+            if (listener is IFixedUpdateListener fixedUpdateListener)
+            {
+                _fixedUpdateListeners.Add(fixedUpdateListener);
+                return;
+            }
+            
+            if (listener is IUpdateListener updateListener)
+            {
+                _updateListeners.Add(updateListener);
+                return;
+            }
+            
             _gameListeners.Add(listener);
         }
 
@@ -37,6 +52,13 @@ namespace Service
             }
 
             SetState(State.Finish);
+        }
+
+        public void InstallListeners()
+        {
+            _gameListeners = Utils.FindComponentsInActiveScene<IGameListener>().ToList();
+            _updateListeners = Utils.FindComponentsInActiveScene<IUpdateListener>().ToList();
+            _fixedUpdateListeners = Utils.FindComponentsInActiveScene<IFixedUpdateListener>().ToList();
         }
 
         public void InitGame()
@@ -77,6 +99,23 @@ namespace Service
 
             SetState(State.GameOver);
         }
+        
+        private void Update()
+        {
+            foreach (var updateListener in _updateListeners)
+            {
+                updateListener.OnUpdate(Time.deltaTime);
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            foreach (var fixedUpdateListener in _fixedUpdateListeners)
+            {
+                fixedUpdateListener.OnFixedUpdate(Time.fixedDeltaTime);
+            }
+        }
+
 
         private void SetState(State state)
         {

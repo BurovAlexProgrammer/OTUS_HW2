@@ -1,17 +1,13 @@
 using System.Collections.Generic;
-using Service;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyPoolService : ServiceBase
+    public sealed class EnemyPool : MonoBehaviour
     {
         [Header("Pool")]
-        [SerializeField]
-        private Transform container;
-
-        [SerializeField]
-        private GameObject prefab;
+        [SerializeField] private Transform container;
+        [SerializeField] private GameObject prefab;
 
         private readonly Queue<GameObject> enemyPool = new();
         

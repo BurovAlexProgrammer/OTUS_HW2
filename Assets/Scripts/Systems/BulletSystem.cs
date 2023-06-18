@@ -7,24 +7,22 @@ namespace ShootEmUp
 {
     public sealed class BulletSystem : MonoBehaviour, IFixedUpdateListener, IGameInitListener
     {
-        [SerializeField] private LevelBounds levelBounds;
-
-        private BulletSpawnService _bulletSpawnService;
+        private BulletSpawner _bulletSpawner;
         private BulletTracker _bulletTracker = new BulletTracker();
 
         [Inject]
-        public void Construct(BulletSpawnService bulletSpawnService)
+        public void Construct(BulletSpawner bulletSpawner)
         {
-            _bulletSpawnService = bulletSpawnService;
+            _bulletSpawner = bulletSpawner;
         }
         
         void IGameInitListener.OnInit()
         {
-            _bulletSpawnService.Init();
-            _bulletSpawnService.OnBulletSpawned += OnBulletSpawned;
-            _bulletSpawnService.OnBulletReturned += OnBulletReturnToPool;
-            _bulletTracker.Init(levelBounds);
+            _bulletSpawner.Init();
+            _bulletSpawner.OnBulletSpawned += OnBulletSpawned;
+            _bulletSpawner.OnBulletReturned += OnBulletReturnToPool;
             _bulletTracker.OnRequireRemove += OnRequireRemoveBullet;
+            DependencyInjector.Inject(_bulletTracker);
         }
 
         private void OnBulletSpawned(Bullet bullet)
@@ -34,7 +32,7 @@ namespace ShootEmUp
 
         void IFixedUpdateListener.OnFixedUpdate(float fixedDeltaTime)
         { 
-            _bulletTracker.Track(_bulletSpawnService.ActiveBullets);
+            _bulletTracker.Track(_bulletSpawner.ActiveBullets);
         }
 
         private void OnBulletCollision(Bullet bullet, Collision2D collision)
@@ -45,12 +43,12 @@ namespace ShootEmUp
 
         private void RemoveBullet(Bullet bullet)
         {
-            _bulletSpawnService.ReturnBullet(bullet);
+            _bulletSpawner.ReturnBullet(bullet);
         }
 
         private void OnRequireRemoveBullet(Bullet bullet)
         {
-            _bulletSpawnService.ReturnBullet(bullet);
+            _bulletSpawner.ReturnBullet(bullet);
         }
 
         private void OnBulletReturnToPool(Bullet bullet)

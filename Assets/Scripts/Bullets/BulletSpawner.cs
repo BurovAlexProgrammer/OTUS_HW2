@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Service
 {
-    public class BulletSpawnService : ServiceBase
+    public class BulletSpawner : MonoBehaviour
     {
         [SerializeField] private int initialCount = 50;
         [SerializeField] private Transform container;

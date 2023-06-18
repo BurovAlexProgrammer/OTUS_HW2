@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DI;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -11,7 +12,8 @@ namespace ShootEmUp
         private readonly List<Bullet> _cache = new();
         private LevelBounds _bounds;
 
-        public void Init(LevelBounds bounds)
+        [Inject]
+        public void Construct(LevelBounds bounds)
         {
             _bounds = bounds;
         }
@@ -27,7 +29,6 @@ namespace ShootEmUp
                 if (!_bounds.InBounds(bullet.transform.position))
                 {
                     OnRequireRemove?.Invoke(bullet);
-                    // RemoveBullet(bullet);
                 }
             }
         }

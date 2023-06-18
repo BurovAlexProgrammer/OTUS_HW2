@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Service
 {
     public static class ServiceLocator
     {
-        private static Dictionary<Type, IService> _services = new Dictionary<Type, IService>();
+        private static Dictionary<Type, object> _services = new Dictionary<Type, object>();
         
-        public static void Add(IService service)
+        public static void Add(object service)
         {
+            if (service == null)
+            {
+                Debug.LogError("Service cannot be null.");
+            }
             var type = service.GetType();
             _services.Add(type, service);
         }
 
-        public static T Get<T>() where T : IService
+        public static T Get<T>()
         {
             return (T)_services[typeof(T)];
         }

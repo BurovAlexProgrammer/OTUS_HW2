@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Service
+﻿namespace Service
 {
-    public class InputService : ServiceBase
+    public class InputService 
     {
         public float HorizontalDirection;
 

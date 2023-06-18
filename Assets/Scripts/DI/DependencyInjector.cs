@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Service;
 using UnityEngine;
@@ -7,6 +9,7 @@ namespace DI
 {
     public static class DependencyInjector
     {
+        private static Queue<object> PostInjectList;
         private const BindingFlags InjectFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         
         public static void Inject(object target)
@@ -33,6 +36,11 @@ namespace DI
             {
                 var type = parameterInfos[i].ParameterType;
                 args[i] = ServiceLocator.Get(type);
+            }
+
+            if (args.Any(x => x == null))
+            {
+                Debug.LogError("Issue");
             }
 
             method.Invoke(target, args);

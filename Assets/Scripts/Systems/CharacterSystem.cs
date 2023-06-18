@@ -1,4 +1,5 @@
 using DI;
+using GameContext;
 using Listener;
 using Service;
 using ShootEmUp;
@@ -8,23 +9,27 @@ namespace Systems
 {
     public sealed class CharacterSystem : MonoBehaviour, IGameInitListener, IGameStartListener, IGameOverListener, IFixedUpdateListener
     {
-        private GameManageService _gameManageService;
+        private GameManager _gameManager;
         private CharacterService _characterService;
         private GameObject _character;
         private InputService _inputService;
-        private BulletSpawnService _bulletSpawnService;
+        private BulletSpawner _bulletSpawner;
         
         private WeaponComponent _weaponComponent;
         private MoveComponent _moveComponent;
 
         [Inject]
-        public void Construct(GameManageService gameManageService, CharacterService characterService, InputService inputService, BulletSpawnService bulletSpawnService)
+        public void Construct(
+            GameManager gameManager, 
+            CharacterService characterService, 
+            InputService inputService, 
+            BulletSpawner bulletSpawner)
         {
-            _gameManageService = gameManageService;
+            _gameManager = gameManager;
             _characterService = characterService;
             _character = characterService.Character;
             _inputService = inputService;
-            _bulletSpawnService = bulletSpawnService;
+            _bulletSpawner = bulletSpawner;
         }
 
         public void OnInit()
@@ -33,10 +38,10 @@ namespace Systems
             _weaponComponent = _character.GetComponent<WeaponComponent>();
         }
         
-        private void OnFlyBullet()
+        private void Fire()
         {
             var bulletConfig = _characterService.BulletConfig;
-            _bulletSpawnService.Spawn(new BulletSpawnService.Args()
+            _bulletSpawner.Spawn(new BulletSpawner.Args()
             {
                 isPlayer = true,
                 physicsLayer = (int) bulletConfig.physicsLayer,
@@ -49,7 +54,7 @@ namespace Systems
 
         private void OnCharacterDeath(GameObject _)
         {
-            this._gameManageService.FinishGame();  
+            this._gameManager.FinishGame();  
         }
 
         void IGameStartListener.OnStart()
@@ -66,7 +71,7 @@ namespace Systems
         {
             if (_inputService.IsFireRequired)
             {
-                this.OnFlyBullet();
+                Fire();
                 _inputService.IsFireRequired = false;
             }
             

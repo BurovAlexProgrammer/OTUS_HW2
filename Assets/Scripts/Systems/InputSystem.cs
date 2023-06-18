@@ -19,17 +19,11 @@ namespace Systems
         public void OnUpdate(float deltaTime)
         {
             _inputService.IsFireRequired = Input.GetKeyDown(KeyCode.Space);
-            // _characterSystem._fireRequired = true;
 
             _inputService.HorizontalDirection =
                 Input.GetKey(KeyCode.LeftArrow) ? -1
                 : Input.GetKey(KeyCode.RightArrow) ? 1
                 : 0;
         }
-
-        // public void OnFixedUpdate(float fixedDeltaTime)
-        // {
-        //     this.character.GetComponent<MoveComponent>().MoveByRigidbodyVelocity(new Vector2(this.HorizontalDirection, 0) * Time.fixedDeltaTime);
-        // }
     }
 }

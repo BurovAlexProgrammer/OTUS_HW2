@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Service
 {
-    public class CharacterService : ServiceBase
+    public class CharacterService : MonoBehaviour
     {
         [SerializeField] private GameObject _character;
         [SerializeField] private BulletConfig _bulletConfig;

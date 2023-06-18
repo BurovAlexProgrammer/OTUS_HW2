@@ -1,3 +1,5 @@
+using System;
+using Service;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -15,7 +17,7 @@ namespace ShootEmUp
 
         [SerializeField]
         private Transform topBorder;
-        
+
         public bool InBounds(Vector3 position)
         {
             var positionX = position.x;
